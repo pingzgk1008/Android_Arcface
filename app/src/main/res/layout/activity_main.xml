@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.MainActivity"
+    android:orientation="vertical">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="activeEngine"
+        android:text="激活引擎"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="jianCe"
+        android:text="人脸检测(图片)"/>
+
+    <Button
+        android:id="@+id/jianceShi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="jumpToPreviewActivity"
+        android:text="人脸检测(相机)"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="zhuCe"
+        android:text="人脸注册"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="shiBie"
+        android:text="人脸识别"/>
+
+
+</LinearLayout>
