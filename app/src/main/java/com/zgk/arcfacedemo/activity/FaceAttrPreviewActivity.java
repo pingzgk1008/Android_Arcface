@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FaceAttrPreviewActivity extends AppCompatActivity implements ViewTreeObserver.OnGlobalLayoutListener {
+public class FaceAttrPreviewActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = "FaceAttrPreviewActivity";
     private CameraHelper cameraHelper;//相机辅助类
     private DrawHelper drawHelper;//绘制人脸框帮助类
@@ -57,21 +57,34 @@ public class FaceAttrPreviewActivity extends AppCompatActivity implements ViewTr
     private View previewView;
     private FaceRectView faceRectView;
 
+    private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
+    /**
+     * 所需的所有权限信息
+     */
+    private static final String[] NEEDED_PERMISSIONS = new String[]{
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_PHONE_STATE
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_face_attr_preview);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WindowManager.LayoutParams attributes = getWindow().getAttributes();
+            attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            getWindow().setAttributes(attributes);
+        }
+
+        // Activity启动后就锁定为启动时的方向
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+
         previewView = findViewById(R.id.texture_preview);
         faceRectView = findViewById(R.id.face_rect_view);
         //在布局结束后才做初始化操作
         previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        initEngine();
-        initCamera();
-        if (cameraHelper != null) {
-            cameraHelper.start();
-        }
     }
 
     /**
@@ -84,8 +97,7 @@ public class FaceAttrPreviewActivity extends AppCompatActivity implements ViewTr
                 DetectMode.ASF_DETECT_MODE_VIDEO,
                 ConfigUtil.getFtOrient(this),
                 16, 20,
-                FaceEngine.ASF_FACE_RECOGNITION |
-                        FaceEngine.ASF_FACE_DETECT |
+                FaceEngine.ASF_FACE_DETECT |
                         FaceEngine.ASF_AGE |
                         FaceEngine.ASF_FACE3DANGLE |
                         FaceEngine.ASF_GENDER |
@@ -141,16 +153,13 @@ public class FaceAttrPreviewActivity extends AppCompatActivity implements ViewTr
                 if (faceRectView != null) {
                     faceRectView.clearFaceInfo();
                 }
-
                 List<FaceInfo> faceInfoList = new ArrayList<>();
-
                 /**
                  * 开始人脸检测
                  */
                 int code = faceEngine.detectFaces(nv21,
                         previewSize.width, previewSize.height,
                         FaceEngine.CP_PAF_NV21, faceInfoList);
-
                 if (code == ErrorInfo.MOK && faceInfoList.size() > 0) {
                     code = faceEngine.process(
                             nv21, previewSize.width, previewSize.height,
@@ -211,7 +220,9 @@ public class FaceAttrPreviewActivity extends AppCompatActivity implements ViewTr
             }
         };
         cameraHelper = new CameraHelper.Builder()
-                .previewViewSize(new Point(previewView.getMeasuredWidth(), previewView.getMeasuredHeight()))
+                .previewViewSize(new Point(
+                        previewView.getMeasuredWidth(),
+                        previewView.getMeasuredHeight()))
                 .rotation(getWindowManager().getDefaultDisplay().getRotation())
                 .specificCameraId(rgbCameraId != null ? rgbCameraId : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .isMirror(false)
@@ -219,6 +230,25 @@ public class FaceAttrPreviewActivity extends AppCompatActivity implements ViewTr
                 .cameraListener(cameraListener)
                 .build();
         cameraHelper.init();
+        cameraHelper.start();
+    }
+
+    /**
+     * 请求权限的回调
+     *
+     * @param requestCode  请求码
+     * @param isAllGranted 是否全部被同意
+     */
+    @Override
+    void afterRequestPermission(int requestCode, boolean isAllGranted) {
+        if (requestCode == ACTION_REQUEST_PERMISSIONS) {
+            if (isAllGranted) {
+                initEngine();
+                initCamera();
+            } else {
+                showToast(getString(R.string.permission_denied));
+            }
+        }
     }
 
     /**
@@ -227,7 +257,12 @@ public class FaceAttrPreviewActivity extends AppCompatActivity implements ViewTr
     @Override
     public void onGlobalLayout() {
         previewView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        initCamera();
+        if (!checkPermissions(NEEDED_PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
+        } else {
+            initEngine();
+            initCamera();
+        }
     }
 
 
