@@ -38,5 +38,11 @@
         android:onClick="shiBie"
         android:text="人脸识别"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="duiBi"
+        android:text="人脸对比"/>
+
 
 </LinearLayout>

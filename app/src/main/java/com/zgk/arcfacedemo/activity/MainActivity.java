@@ -111,5 +111,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(mContext, ShiBieActivity.class));
     }
 
+    /*
+     * 人脸对比
+     * */
+    public void duiBi(final View view) {
+        startActivity(new Intent(mContext, DuiBiActivity.class));
+    }
+
 }
 

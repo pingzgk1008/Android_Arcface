@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.FaceAttrPreviewActivity"/>
+        <activity android:name=".activity.DuiBiActivity"></activity>
+        <activity android:name=".activity.FaceAttrPreviewActivity" />
         <activity android:name=".activity.ShiBieActivity" />
         <activity android:name=".activity.ZhuCeActivity" />
         <activity android:name=".activity.JianCeActivity" />

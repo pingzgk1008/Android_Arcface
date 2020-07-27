@@ -134,7 +134,6 @@ public class JianCeActivity extends AppCompatActivity {
      * @param view
      */
     public void chooseLocalImage(final View view) {
-
         if (ContextCompat.checkSelfPermission(JianCeActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //没有授权进行权限申请
             ActivityCompat.requestPermissions(
@@ -144,7 +143,12 @@ public class JianCeActivity extends AppCompatActivity {
         } else {
             pickPhoto();
         }
+    }
 
+    private void pickPhoto() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, CHOOSE_PHOTO); // 打开相册
     }
 
     /*
@@ -162,12 +166,6 @@ public class JianCeActivity extends AppCompatActivity {
                 }
                 break;
         }
-    }
-
-    private void pickPhoto() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent, CHOOSE_PHOTO); // 打开相册
     }
 
     @Override
@@ -356,7 +354,6 @@ public class JianCeActivity extends AppCompatActivity {
                 stringBuilder.append("face[" + String.valueOf(i) + "]:" + gender + "\n");
             }
         }
-
 
         runOnUiThread(new Runnable() {
             @Override

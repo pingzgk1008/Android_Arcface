@@ -265,6 +265,20 @@ public class FaceAttrPreviewActivity extends BaseActivity implements ViewTreeObs
         }
     }
 
-
+    /**
+     * 切换相机。注意：若切换相机发现检测不到人脸，则极有可能是检测角度导致的，需要销毁引擎重新创建或者在设置界面修改配置的检测角度
+     *
+     * @param view
+     */
+    public void switchCamera(View view) {
+        if (cameraHelper != null) {
+            boolean success = cameraHelper.switchCamera();
+            if (!success) {
+                showToast(getString(R.string.switch_camera_failed));
+            } else {
+                showLongToast(getString(R.string.notice_change_detect_degree));
+            }
+        }
+    }
 
 }
